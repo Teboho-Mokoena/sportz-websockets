@@ -1,15 +1,11 @@
 import { z } from 'zod';
 
 // Constants
-export const MATCH_STATUS = {
+export const MATCH_STATUS = Object.freeze({
   SCHEDULED: 'scheduled',
   LIVE: 'live',
   FINISHED: 'finished',
-};
-
-// Helpers
-const isoDateTimeRegex = /^(\d{4})-(\d{2})-(\d{2})T(\d{2}):(\d{2}):(\d{2})(?:\.\d{1,3})?(?:Z|[+\-]\d{2}:\d{2})$/;
-const isValidIsoDateString = (val) => isoDateTimeRegex.test(val) && !Number.isNaN(Date.parse(val));
+});
 
 // Schemas
 export const listMatchesQuerySchema = z.object({
@@ -25,12 +21,8 @@ export const createMatchSchema = z
     sport: z.string().min(1, 'sport is required'),
     homeTeam: z.string().min(1, 'homeTeam is required'),
     awayTeam: z.string().min(1, 'awayTeam is required'),
-    startTime: z
-      .string()
-      .refine(isValidIsoDateString, { message: 'startTime must be a valid ISO date string' }),
-    endTime: z
-      .string()
-      .refine(isValidIsoDateString, { message: 'endTime must be a valid ISO date string' }),
+    startTime: z.iso.datetime(),
+    endTime: z.iso.datetime(),
     homeScore: z.coerce.number().int().nonnegative().optional(),
     awayScore: z.coerce.number().int().nonnegative().optional(),
   })
